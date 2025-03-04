@@ -10,11 +10,23 @@ function Board:new()
 	for y = 1, instance.height do
 		instance.grid[y] = {}
 		for x = 1, instance.width do
-			instance.grid[y][x] = "▣"
+			instance.grid[y][x] = "_"
 		end
 	end
 
 	return instance
+end
+
+function Board:addPiece(piece)
+	-- TODO: Add pieces to the board grid based on the piece's position and rotation
+	if piece.type == "I" then
+	elseif piece.type == "T" then
+	elseif piece.type == "S" then
+	elseif piece.type == "Z" then
+	elseif piece.type == "O" then
+	elseif piece.type == "L" then
+	elseif piece.type == "J" then
+	end
 end
 
 function Board:render()
