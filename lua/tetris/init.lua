@@ -16,23 +16,28 @@ function tetris:setupBuffer()
 	local buf = vim.api.nvim_create_buf(false, true) -- unlisted (not in tab list) and scratch (empty text file) buffer
 
 	-- buffer options
-	vim.api.nvim_set_option_value("bufhidden", "wipe", { buf = buf }) -- wipe the buffer when it's hidden
 	vim.api.nvim_set_option_value("filetype", "tetris", { buf = buf })
 	vim.api.nvim_buf_set_name(buf, "tetris")
 
+	-- Create header and borders
 	do
-		local width = vim.api.nvim_get_option_value("columns", { scope = "local" })
-		local height = vim.api.nvim_get_option_value("lines", { scope = "local" })
+		vim.api.nvim_set_hl(0, "borderHighlight", { fg = "white", bg = "gray" })
+
+		vim.api.nvim_buf_set_lines(buf, 0, -1, false, { string.rep(" ", 7) .. "Tetris" .. string.rep(" ", 7) })
+		vim.api.nvim_buf_add_highlight(buf, -1, "borderHighlight", 0, 0, -1)
 	end
 
+	-- Set the buffer contents to the rendered board
+	-- vim.api.nvim_buf_set_lines(buffer, 0, -1, false, vim.split(board:render(), "\n"))
+	-- vim.api.nvim_set_option_value("modifiable", false, { buf = buffer })
 	return buf
 end
 
 -- Setup window view options
 function tetris:setupWindow(buf)
 	-- Tetris board dimensions
-	local tetrisWidth = (constants.board.columns * constants.square.width) + (constants.border.width * 2)
-	local tetrisHeight = (constants.board.rows * constants.square.height) + (constants.border.width * 2)
+	local tetrisWidth = (constants.board.columns * constants.square.width)
+	local tetrisHeight = (constants.board.rows * constants.square.height) + constants.header.height
 
 	-- center the window around the editor
 	local editorWidth = vim.api.nvim_get_option_value("columns", { scope = "global" })
