@@ -1,4 +1,5 @@
 local Board = require("tetris.board")
+local Piece = require("tetris.piece")
 local constants = require("tetris.constants")
 local tetris = {}
 
@@ -7,8 +8,10 @@ function tetris:start_game()
 end
 
 function tetris:open_tetris()
-	local buffer = self:setupBuffer()
-	self:setupWindow(buffer)
+	local buf = self:setupBuffer()
+	self:setupWindow(buf)
+
+	self:initBoard(buf)
 end
 
 -- Setup the buffer
@@ -22,14 +25,10 @@ function tetris:setupBuffer()
 	-- Create header and borders
 	do
 		vim.api.nvim_set_hl(0, "borderHighlight", { fg = "white", bg = "gray" })
-
 		vim.api.nvim_buf_set_lines(buf, 0, -1, false, { string.rep(" ", 7) .. "Tetris" .. string.rep(" ", 7) })
 		vim.api.nvim_buf_add_highlight(buf, -1, "borderHighlight", 0, 0, -1)
 	end
 
-	-- Set the buffer contents to the rendered board
-	-- vim.api.nvim_buf_set_lines(buffer, 0, -1, false, vim.split(board:render(), "\n"))
-	-- vim.api.nvim_set_option_value("modifiable", false, { buf = buffer })
 	return buf
 end
 
@@ -55,6 +54,21 @@ function tetris:setupWindow(buf)
 		col = col,
 	}
 	local window = vim.api.nvim_open_win(buf, true, windowOpts)
+end
+
+function tetris:initBoard(buf)
+	local board = Board:new()
+
+	local header_end = vim.api.nvim_buf_line_count(buf)
+
+	local test_piece = Piece:new("T")
+
+	test_piece.x = 3
+	test_piece.y = 10
+
+	board:addPiece(test_piece)
+
+	vim.api.nvim_buf_set_lines(buf, header_end, header_end, false, board:render())
 end
 
 return tetris

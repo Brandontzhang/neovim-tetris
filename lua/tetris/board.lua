@@ -7,6 +7,7 @@ function Board:new()
 	instance.height = 20
 	instance.grid = {}
 
+	-- TODO: Fix creation of grid to follow x,y format
 	for y = 1, instance.height do
 		instance.grid[y] = {}
 		for x = 1, instance.width do
@@ -18,24 +19,28 @@ function Board:new()
 end
 
 function Board:addPiece(piece)
-	-- TODO: Add pieces to the board grid based on the piece's position and rotation
-	if piece.type == "I" then
-	elseif piece.type == "T" then
-	elseif piece.type == "S" then
-	elseif piece.type == "Z" then
-	elseif piece.type == "O" then
-	elseif piece.type == "L" then
-	elseif piece.type == "J" then
+	local rotation = piece.rotation
+
+	vim.notify(piece.height .. ", " .. piece.width, vim.log.levels.DEBUG)
+
+	for x = piece.x, piece.x + piece.width - 1 do
+		for y = piece.y, piece.y + piece.height - 1 do
+			local val = rotation[(x - piece.x) + 1][(y - piece.y) + 1]
+			if val == 1 then
+				self.grid[x][y] = val
+			end
+		end
 	end
 end
 
 function Board:render()
-	local renderBoard = ""
+	local renderBoard = {}
 	for y = 1, self.height do
+		local row = ""
 		for x = 1, self.width do
-			renderBoard = renderBoard .. self.grid[y][x]
+			row = row .. self.grid[y][x] .. self.grid[y][x]
 		end
-		renderBoard = renderBoard .. "\n"
+		table.insert(renderBoard, row)
 	end
 
 	return renderBoard

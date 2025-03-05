@@ -1,30 +1,41 @@
 Piece = {}
 Piece.__index = Piece
 
-function Piece:new(s)
+function Piece:new(t)
 	local piece = setmetatable({}, Piece)
-	piece:setType(s)
-	piece.x = 5
+	piece:setType(t)
+
+	piece.rotation = {}
+	piece:initRotation()
+
+	-- The x and y coordinate represents where the top left corner of the piece rotation is located on the grid
+	piece.x = 3
 	piece.y = 21
+
+	-- width of the grid rotation
+	piece.width = 3
+	piece.height = 3
+
 	return piece
 end
 
-function Piece:setType(s)
+function Piece:setType(t)
 	local types = { "I", "T", "S", "Z", "O", "L", "J" }
 
-	if types[s] == nil then
-		error("Invalid piece type " .. s)
+	for _, type in ipairs(types) do
+		if t == type then
+			self.type = t
+			return
+		end
 	end
-
-	self.type = s
+	error("Invalid piece type " .. t)
 end
 
-function Piece:setDimensions()
+function Piece:initRotation()
 	if self.type == nil then
 		error("Piece type not set")
 	end
 
-	self.rotation = {}
 	for i = 1, 3 do
 		self.rotation[i] = {}
 		for j = 1, 3 do
@@ -72,6 +83,9 @@ function Piece:setDimensions()
 		self.rotation[2][2] = 1
 		self.rotation[2][3] = 1
 		self.rotation[2][4] = 1
+
+		self.width = 4
+		self.height = 4
 	end
 
 	if self.type == "O" then
@@ -87,5 +101,9 @@ function Piece:setDimensions()
 		self.rotation[1][3] = 1
 		self.rotation[2][2] = 1
 		self.rotation[2][3] = 1
+
+		self.width = 4
 	end
 end
+
+return Piece
