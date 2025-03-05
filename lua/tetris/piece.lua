@@ -9,8 +9,8 @@ function Piece:new(t)
 	piece:initRotation()
 
 	-- The x and y coordinate represents where the top left corner of the piece rotation is located on the grid
-	piece.x = 3
-	piece.y = 21
+	piece.row = 3
+	piece.col = 21
 
 	-- width of the grid rotation
 	piece.width = 3

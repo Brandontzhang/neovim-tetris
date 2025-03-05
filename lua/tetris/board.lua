@@ -8,10 +8,10 @@ function Board:new()
 	instance.grid = {}
 
 	-- TODO: Fix creation of grid to follow x,y format
-	for y = 1, instance.height do
-		instance.grid[y] = {}
-		for x = 1, instance.width do
-			instance.grid[y][x] = "_"
+	for x = 1, instance.width do
+		instance.grid[x] = {}
+		for y = 1, instance.height do
+			instance.grid[x][y] = " "
 		end
 	end
 
@@ -21,11 +21,9 @@ end
 function Board:addPiece(piece)
 	local rotation = piece.rotation
 
-	vim.notify(piece.height .. ", " .. piece.width, vim.log.levels.DEBUG)
-
-	for x = piece.x, piece.x + piece.width - 1 do
-		for y = piece.y, piece.y + piece.height - 1 do
-			local val = rotation[(x - piece.x) + 1][(y - piece.y) + 1]
+	for x = piece.row, piece.row + piece.width - 1 do
+		for y = piece.col, piece.col + piece.height - 1 do
+			local val = rotation[(x - piece.row) + 1][(y - piece.col) + 1]
 			if val == 1 then
 				self.grid[x][y] = val
 			end
@@ -35,10 +33,10 @@ end
 
 function Board:render()
 	local renderBoard = {}
-	for y = 1, self.height do
+	for x = 1, self.width do
 		local row = ""
-		for x = 1, self.width do
-			row = row .. self.grid[y][x] .. self.grid[y][x]
+		for y = 1, self.height do
+			row = row .. self.grid[x][y] .. self.grid[x][y]
 		end
 		table.insert(renderBoard, row)
 	end

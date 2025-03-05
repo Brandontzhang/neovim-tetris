@@ -63,8 +63,8 @@ function tetris:initBoard(buf)
 
 	local test_piece = Piece:new("T")
 
-	test_piece.x = 3
-	test_piece.y = 10
+	test_piece.row = 3
+	test_piece.col = 4
 
 	board:addPiece(test_piece)
 
