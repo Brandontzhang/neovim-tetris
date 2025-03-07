@@ -16,17 +16,37 @@ end
 
 -- Setup the buffer
 function tetris:setupBuffer()
-	local buf = vim.api.nvim_create_buf(false, true) -- unlisted (not in tab list) and scratch (empty text file) buffer
+	local buf = self:checkExistingTetrisBuf()
 
-	-- buffer options
-	vim.api.nvim_set_option_value("filetype", "tetris", { buf = buf })
-	vim.api.nvim_buf_set_name(buf, "tetris")
+	if buf == nil then
+		buf = vim.api.nvim_create_buf(false, true) -- unlisted (not in tab list) and scratch (empty text file) buffer
+
+		-- buffer options
+		vim.api.nvim_set_option_value("filetype", "tetris", { buf = buf })
+		vim.api.nvim_buf_set_name(buf, "tetris")
+	end
 
 	-- Create header and borders
 	do
 		vim.api.nvim_set_hl(0, "borderHighlight", { fg = "white", bg = "gray" })
 		vim.api.nvim_buf_set_lines(buf, 0, -1, false, { string.rep(" ", 7) .. "Tetris" .. string.rep(" ", 7) })
 		vim.api.nvim_buf_add_highlight(buf, -1, "borderHighlight", 0, 0, -1)
+	end
+
+	return buf
+end
+
+function tetris:checkExistingTetrisBuf()
+	local buf = nil
+
+	for _, existingBuf in ipairs(vim.api.nvim_list_bufs()) do
+		local fullPath = vim.api.nvim_buf_get_name(existingBuf)
+		local bufName = fullPath:match("^.+/(.+)$") or fullPath
+
+		if bufName == "tetris" then
+			buf = existingBuf
+			break
+		end
 	end
 
 	return buf
