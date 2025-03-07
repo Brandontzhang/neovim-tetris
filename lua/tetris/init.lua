@@ -35,7 +35,7 @@ function tetris:setupBuffer()
 	end
 
 	-- Add controls to the buffer
-	Game:set_tetris_keymaps(buf)
+	Game:setTetrisKeymaps(buf)
 	return buf
 end
 

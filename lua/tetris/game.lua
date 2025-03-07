@@ -1,21 +1,55 @@
 Game = {}
 
-function Game:set_tetris_keymaps(buf)
+function Game:setTetrisKeymaps(buf)
 	local opts = { noremap = true, silent = true, buffer = buf }
 
 	-- Movement
-	vim.keymap.set("n", "<Left>", "<Cmd>lua require('tetris').move_left()<CR>", opts)
-	vim.keymap.set("n", "<Right>", "<Cmd>lua require('tetris').move_right()<CR>", opts)
-	vim.keymap.set("n", "<Down>", "<Cmd>lua require('tetris').move_down()<CR>", opts)
-	vim.keymap.set("n", "<Up>", "<Cmd>lua require('tetris').rotate_clockwise()<CR>", opts)
-	vim.keymap.set("n", "<Space>", "<Cmd>lua require('tetris').hard_drop()<CR>", opts)
+	vim.keymap.set("n", "<Left>", "<Cmd>lua require('tetris.game').moveLeft()<CR>", opts)
+	vim.keymap.set("n", "<Right>", "<Cmd>lua require('tetris.game').moveRight()<CR>", opts)
+	vim.keymap.set("n", "<Down>", "<Cmd>lua require('tetris.game').moveDown()<CR>", opts)
+	vim.keymap.set("n", "<Up>", "<Cmd>lua require('tetris.game').rotateClockwise()<CR>", opts)
+	vim.keymap.set("n", "<Space>", "<Cmd>lua require('tetris.game').hardDrop()<CR>", opts)
 
 	-- Rotation
-	vim.keymap.set("n", "z", "<Cmd>lua require('tetris').rotate_counterclockwise()<CR>", opts)
-	vim.keymap.set("n", "x", "<Cmd>lua require('tetris').rotate_clockwise()<CR>", opts)
+	vim.keymap.set("n", "z", "<Cmd>lua require('tetris.game').rotateCounterclockwise()<CR>", opts)
+	vim.keymap.set("n", "x", "<Cmd>lua require('tetris.game').rotateClockwise()<CR>", opts)
 
 	-- Hold piece
-	vim.keymap.set("n", "<S>", "<Cmd>lua require('tetris').hold_piece()<CR>", opts)
+	vim.keymap.set("n", "c", "<Cmd>lua require('tetris.game').holdPiece()<CR>", opts)
+end
+
+function Game:moveLeft()
+	vim.notify("Move left", vim.log.levels.DEBUG)
+end
+
+function Game:moveRight()
+	-- Move Right
+	vim.notify("Move right", vim.log.levels.DEBUG)
+end
+
+function Game:moveDown()
+	-- Move Down
+	vim.notify("Move down", vim.log.levels.DEBUG)
+end
+
+function Game:hardDrop()
+	-- Hard Drop
+	vim.notify("Hard drop", vim.log.levels.DEBUG)
+end
+
+function Game:rotateCounterclockwise()
+	-- Rotate Counter Clockwise
+	vim.notify("RCC", vim.log.levels.DEBUG)
+end
+
+function Game:rotateClockwise()
+	-- Rotate Clockwise
+	vim.notify("RC", vim.log.levels.DEBUG)
+end
+
+function Game:holdPiece()
+	-- Hold Piece
+	vim.notify("Hold", vim.log.levels.DEBUG)
 end
 
 return Game
