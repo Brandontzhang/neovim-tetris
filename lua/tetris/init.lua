@@ -1,5 +1,6 @@
 local Board = require("tetris.board")
 local Piece = require("tetris.piece")
+local Game = require("tetris.game")
 local constants = require("tetris.constants")
 local tetris = {}
 
@@ -33,6 +34,8 @@ function tetris:setupBuffer()
 		vim.api.nvim_buf_add_highlight(buf, -1, "borderHighlight", 0, 0, -1)
 	end
 
+	-- Add controls to the buffer
+	Game:set_tetris_keymaps(buf)
 	return buf
 end
 
