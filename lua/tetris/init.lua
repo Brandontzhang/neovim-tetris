@@ -55,6 +55,43 @@ function tetris:checkExistingTetrisBuf()
 	return buf
 end
 
+function tetris:setupHighlights(buf)
+	vim.api.nvim_set_hl(0, "tHighlight", { fg = "purple", bg = "purple" })
+	vim.api.nvim_set_hl(0, "sHighlight", { fg = "pink", bg = "pink" })
+	vim.api.nvim_set_hl(0, "zHighlight", { fg = "green", bg = "green" })
+	vim.api.nvim_set_hl(0, "lHighlight", { fg = "blue", bg = "blue" })
+	vim.api.nvim_set_hl(0, "jHighlight", { fg = "orange", bg = "orange" })
+	vim.api.nvim_set_hl(0, "iHighlight", { fg = "teal", bg = "teal" })
+	vim.api.nvim_set_hl(0, "oHighlight", { fg = "yellow", bg = "yellow" })
+
+	local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
+
+	for line_num, line in ipairs(lines) do
+		if line_num == 1 then
+			goto continue
+		end
+
+		for col = 1, #line do
+			if line:sub(col, col) == "T" then
+				vim.api.nvim_buf_add_highlight(buf, -1, "tHighlight", line_num - 1, col - 1, col)
+			elseif line:sub(col, col) == "S" then
+				vim.api.nvim_buf_add_highlight(buf, -1, "sHighlight", line_num - 1, col - 1, col)
+			elseif line:sub(col, col) == "Z" then
+				vim.api.nvim_buf_add_highlight(buf, -1, "zHighlight", line_num - 1, col - 1, col)
+			elseif line:sub(col, col) == "L" then
+				vim.api.nvim_buf_add_highlight(buf, -1, "lHighlight", line_num - 1, col - 1, col)
+			elseif line:sub(col, col) == "J" then
+				vim.api.nvim_buf_add_highlight(buf, -1, "jHighlight", line_num - 1, col - 1, col)
+			elseif line:sub(col, col) == "I" then
+				vim.api.nvim_buf_add_highlight(buf, -1, "iHighlight", line_num - 1, col - 1, col)
+			elseif line:sub(col, col) == "O" then
+				vim.api.nvim_buf_add_highlight(buf, -1, "oHighlight", line_num - 1, col - 1, col)
+			end
+		end
+		::continue::
+	end
+end
+
 -- Setup window view options
 function tetris:setupWindow(buf)
 	-- Tetris board dimensions
@@ -84,14 +121,15 @@ function tetris:initBoard(buf)
 
 	local header_end = vim.api.nvim_buf_line_count(buf)
 
-	local test_piece = Piece:new("T")
+	local test_piece = Piece:new()
 
 	test_piece.row = 3
 	test_piece.col = 4
 
-	board:addPiece(test_piece)
+	board:placePiece(test_piece)
 
 	vim.api.nvim_buf_set_lines(buf, header_end, header_end, false, board:render())
+	tetris:setupHighlights(buf)
 end
 
 return tetris

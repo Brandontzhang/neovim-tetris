@@ -1,3 +1,5 @@
+local Piece = require("tetris.piece")
+
 local Board = {}
 Board.__index = Board
 
@@ -7,7 +9,6 @@ function Board:new()
 	instance.height = 20
 	instance.grid = {}
 
-	-- TODO: Fix creation of grid to follow x,y format
 	for x = 1, instance.width do
 		instance.grid[x] = {}
 		for y = 1, instance.height do
@@ -15,17 +16,27 @@ function Board:new()
 		end
 	end
 
+	instance:generatePiece()
+
 	return instance
 end
 
-function Board:addPiece(piece)
+function Board:generatePiece()
+	local randomType = Piece.types[math.random(1, #Piece.types)]
+	self.curPiece = Piece.new(randomType)
+
+	self:placePiece()
+end
+
+function Board:placePiece()
+	local piece = self.curPiece
 	local rotation = piece.rotation
 
 	for x = piece.row, piece.row + piece.width - 1 do
 		for y = piece.col, piece.col + piece.height - 1 do
 			local val = rotation[(x - piece.row) + 1][(y - piece.col) + 1]
 			if val == 1 then
-				self.grid[x][y] = val
+				self.grid[x][y] = piece.type
 			end
 		end
 	end
