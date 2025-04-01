@@ -1,5 +1,15 @@
 Game = {}
 
+Board = {}
+
+function Game:setBoard(board)
+	Board = board
+end
+
+function Game:getBoard()
+	return Board
+end
+
 function Game:setTetrisKeymaps(buf)
 	local opts = { noremap = true, silent = true, buffer = buf }
 
@@ -20,6 +30,8 @@ end
 
 function Game:moveLeft()
 	vim.notify("Move left", vim.log.levels.DEBUG)
+	-- need to get the instance instead of the board itself
+	Board:moveLeft()
 end
 
 function Game:moveRight()
@@ -42,14 +54,19 @@ function Game:rotateCounterclockwise()
 	vim.notify("RCC", vim.log.levels.DEBUG)
 end
 
-function Game:rotateClockwise()
+function Game.rotateClockwise(board)
 	-- Rotate Clockwise
 	vim.notify("RC", vim.log.levels.DEBUG)
+	board:rotateCW()
 end
 
 function Game:holdPiece()
 	-- Hold Piece
 	vim.notify("Hold", vim.log.levels.DEBUG)
+end
+
+function Game.gravity()
+	Board:gravity()
 end
 
 return Game

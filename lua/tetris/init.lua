@@ -11,8 +11,9 @@ end
 function tetris:open_tetris()
 	local buf = self:setupBuffer()
 	self:setupWindow(buf)
-
 	self:initBoard(buf)
+
+	self:gameLoop(buf)
 end
 
 -- Setup the buffer
@@ -114,22 +115,46 @@ function tetris:setupWindow(buf)
 		col = col,
 	}
 	local window = vim.api.nvim_open_win(buf, true, windowOpts)
+
+	return window
 end
 
 function tetris:initBoard(buf)
 	local board = Board:new()
+	Game:setBoard(board)
 
+	self:renderBoard(buf)
+end
+
+function tetris:renderBoard(buf)
 	local header_end = vim.api.nvim_buf_line_count(buf)
-
-	local test_piece = Piece:new()
-
-	test_piece.row = 3
-	test_piece.col = 4
-
-	board:placePiece(test_piece)
-
-	vim.api.nvim_buf_set_lines(buf, header_end, header_end, false, board:render())
+	vim.api.nvim_buf_set_lines(buf, 1, -1, false, {}) -- Clears everything except the first line
+	vim.api.nvim_buf_set_lines(buf, header_end, header_end, false, Game:getBoard():render())
 	tetris:setupHighlights(buf)
+end
+
+function tetris:is_buffer_open(buf)
+	local buf_exists = vim.api.nvim_buf_is_valid(buf)
+	local buf_visible = vim.fn.bufwinnr(buf) ~= -1
+	return buf_exists and buf_visible
+end
+
+-- Game timer for automated tasks
+-- Gravity for pieces
+function tetris:gameLoop(buf)
+	local gameTimer = vim.loop.new_timer()
+	gameTimer:start(
+		0,
+		1000,
+		vim.schedule_wrap(function()
+			if not self:is_buffer_open(buf) then
+				return
+			end
+
+			Game.gravity()
+			tetris:renderBoard(buf)
+		end)
+	)
 end
 
 return tetris
