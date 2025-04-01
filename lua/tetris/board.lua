@@ -2,8 +2,7 @@ local Piece = require("tetris.piece")
 
 local Board = {}
 
--- TODO: CONSENSUS ON HEIGHT, WIDTH, X, Y, TABLE STORAGE
--- There should be 20 rows (height) and 10 columns (width) => board[row][col]
+-- INFO: There are 20 rows (height) and 10 columns (width) => board[row][col]
 function Board:new()
 	local instance = setmetatable({}, { __index = Board })
 	instance.width = 10
@@ -29,6 +28,26 @@ function Board:generatePiece()
 	self:placePiece()
 end
 
+function Board:clearPiece()
+	local piece = self.curPiece
+	local rotation = piece.rotation
+
+	for row = piece.row, piece.row + piece.height - 1 do
+		for col = piece.col, piece.col + piece.width - 1 do
+			local pieceRow = (row - piece.row) + 1
+			local pieceCol = (col - piece.col) + 1
+			local val = rotation[pieceRow][pieceCol]
+
+			if col < 0 or row > self.height - 1 then
+				goto continue
+			elseif val == 1 then
+				self.grid[row][col] = " "
+			end
+			::continue::
+		end
+	end
+end
+
 -- TODO: adjust for upper collision detection area on spawn
 function Board:placePiece()
 	local piece = self.curPiece
@@ -39,17 +58,12 @@ function Board:placePiece()
 		for col = piece.col, piece.col + piece.width - 1 do
 			local pieceRow = (row - piece.row) + 1
 			local pieceCol = (col - piece.col) + 1
-			print(pieceRow .. pieceCol)
 			local val = rotation[pieceRow][pieceCol]
 
 			if col < 0 or row > self.height - 1 then
 				goto continue
 			elseif val == 1 then
 				self.grid[row][col] = piece.type
-			else
-				-- Need to wipe out the previous stuff...
-				-- TODO: But can't wipe out items on the board that have been locked in
-				self.grid[row][col] = " "
 			end
 			::continue::
 		end
@@ -65,6 +79,8 @@ function Board:moveLeft()
 end
 
 function Board:gravity()
+	-- Removing the piece's previous position before moving it and redrawing with new location
+	self:clearPiece()
 	self.curPiece:moveDown()
 	self:placePiece()
 end
