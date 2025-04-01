@@ -30,13 +30,12 @@ end
 
 function Board:clearPiece()
 	local piece = self.curPiece
-	local rotation = piece.rotation
 
 	for row = piece.row, piece.row + piece.height - 1 do
 		for col = piece.col, piece.col + piece.width - 1 do
 			local pieceRow = (row - piece.row) + 1
 			local pieceCol = (col - piece.col) + 1
-			local val = rotation[pieceRow][pieceCol]
+			local val = piece.grid[pieceRow][pieceCol]
 
 			if col < 0 or row > self.height - 1 then
 				goto continue
@@ -48,24 +47,19 @@ function Board:clearPiece()
 	end
 end
 
--- TODO: adjust for upper collision detection area on spawn
 function Board:placePiece()
 	local piece = self.curPiece
-	local pieceGrid = piece.grid
 
-	-- The board should have 22 rows. 2 at the top which aren't displayed... meaning that should only be handled in the render. No need to worry about it here.
-	for row = piece.row, piece.row + piece.height - 1 do
+	-- TODO: Should be able to place the piece even if it's borders pass the board grid. Add a check before placing down, and change the loop to account for larger piece grid
+	for row = piece.row, math.min(piece.row + piece.height - 1, self.height) do
 		for col = piece.col, piece.col + piece.width - 1 do
 			local pieceRow = (row - piece.row) + 1
 			local pieceCol = (col - piece.col) + 1
-			local val = pieceGrid[pieceRow][pieceCol]
+			local val = piece.grid[pieceRow][pieceCol]
 
-			if col < 0 or row > self.height - 1 then
-				goto continue
-			elseif val == 1 then
+			if val == 1 then
 				self.grid[row][col] = piece.type
 			end
-			::continue::
 		end
 	end
 end
@@ -79,10 +73,57 @@ function Board:moveLeft()
 end
 
 function Board:gravity()
-	-- Removing the piece's previous position before moving it and redrawing with new location
-	self:clearPiece()
-	self.curPiece:moveDown()
-	self:placePiece()
+	local pieceLanded = self:pieceLanded()
+	if pieceLanded then
+		-- TODO: do checks before locking in the piece
+		self:generatePiece()
+	else
+		self:clearPiece()
+		self.curPiece:moveDown()
+		self:placePiece()
+	end
+end
+
+function Board:pieceLanded()
+	local piece = self.curPiece
+
+	-- 1. Get the surrounding blocks in the area around the current piece
+	-- TODO: Memoize the value if the location and piece haven't changed
+	local height = 0
+	local localGrid = {}
+	for row = piece.row, math.min(piece.row + piece.height, self.height) do
+		local pieceRow = (row - piece.row) + 1
+		localGrid[pieceRow] = {}
+
+		for col = piece.col, piece.col + piece.width - 1 do
+			local pieceCol = (col - piece.col) + 1
+
+			if (pieceRow <= piece.height and pieceCol <= piece.col) and piece.grid[pieceRow][pieceCol] == 1 then
+				localGrid[pieceRow][pieceCol] = "x"
+			else
+				localGrid[pieceRow][pieceCol] = self.grid[row][col]
+			end
+		end
+
+		height = height + 1
+	end
+
+	-- 2. if the piece is at the bottom, or has another piece below it, return true
+	for rowIndex, row in ipairs(localGrid) do
+		for colIndex, val in ipairs(row) do
+			if
+				val == "x"
+				and (
+					rowIndex == height
+					or (localGrid[rowIndex + 1][colIndex] ~= " " and localGrid[rowIndex + 1][colIndex] ~= "x")
+				)
+			then
+				return true
+			end
+		end
+	end
+
+	return false
 end
 
 function Board:render()

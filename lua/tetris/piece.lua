@@ -92,10 +92,7 @@ function Piece:moveLeft()
 end
 
 function Piece:moveDown()
-	-- TODO: Detect collision to stop
-	if self.row <= 20 - self.height + 1 then
-		self.row = self.row + 1
-	end
+	self.row = self.row + 1
 end
 
 return Piece
