@@ -88,7 +88,7 @@ end
 function Board:render()
 	local renderBoard = {}
 
-	for row = 1, self.height do
+	for row = 3, self.height do
 		local rowStr = ""
 		for col = 1, self.width do
 			rowStr = rowStr .. self.grid[row][col] .. self.grid[row][col]
