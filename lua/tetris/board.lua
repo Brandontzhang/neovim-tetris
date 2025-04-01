@@ -51,14 +51,14 @@ end
 -- TODO: adjust for upper collision detection area on spawn
 function Board:placePiece()
 	local piece = self.curPiece
-	local rotation = piece.rotation
+	local pieceGrid = piece.grid
 
 	-- The board should have 22 rows. 2 at the top which aren't displayed... meaning that should only be handled in the render. No need to worry about it here.
 	for row = piece.row, piece.row + piece.height - 1 do
 		for col = piece.col, piece.col + piece.width - 1 do
 			local pieceRow = (row - piece.row) + 1
 			local pieceCol = (col - piece.col) + 1
-			local val = rotation[pieceRow][pieceCol]
+			local val = pieceGrid[pieceRow][pieceCol]
 
 			if col < 0 or row > self.height - 1 then
 				goto continue
