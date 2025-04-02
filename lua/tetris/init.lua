@@ -59,10 +59,10 @@ end
 
 function tetris:setupHighlights(buf)
 	vim.api.nvim_set_hl(0, "tHighlight", { fg = "purple", bg = "purple" })
-	vim.api.nvim_set_hl(0, "sHighlight", { fg = "pink", bg = "pink" })
-	vim.api.nvim_set_hl(0, "zHighlight", { fg = "green", bg = "green" })
-	vim.api.nvim_set_hl(0, "lHighlight", { fg = "blue", bg = "blue" })
-	vim.api.nvim_set_hl(0, "jHighlight", { fg = "orange", bg = "orange" })
+	vim.api.nvim_set_hl(0, "sHighlight", { fg = "green", bg = "green" })
+	vim.api.nvim_set_hl(0, "zHighlight", { fg = "red", bg = "red" })
+	vim.api.nvim_set_hl(0, "lHighlight", { fg = "orange", bg = "orange" })
+	vim.api.nvim_set_hl(0, "jHighlight", { fg = "blue", bg = "blue" })
 	vim.api.nvim_set_hl(0, "iHighlight", { fg = "teal", bg = "teal" })
 	vim.api.nvim_set_hl(0, "oHighlight", { fg = "yellow", bg = "yellow" })
 
