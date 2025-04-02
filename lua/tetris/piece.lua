@@ -3,6 +3,7 @@ Piece.__index = Piece
 
 Piece.types = { "I", "T", "S", "Z", "O", "L", "J" }
 
+-- TODO: Implement rotation
 function Piece.new(type)
 	local piece = setmetatable({}, Piece)
 
@@ -86,9 +87,11 @@ function Piece:initGridValues()
 end
 
 function Piece:moveLeft()
-	if self.col > 0 then
-		self.col = self.col - 1
-	end
+	self.col = self.col - 1
+end
+
+function Piece:moveRight()
+	self.col = self.col + 1
 end
 
 function Piece:moveDown()

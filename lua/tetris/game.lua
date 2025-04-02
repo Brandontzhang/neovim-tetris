@@ -29,14 +29,11 @@ function Game:setTetrisKeymaps(buf)
 end
 
 function Game:moveLeft()
-	vim.notify("Move left", vim.log.levels.DEBUG)
-	-- need to get the instance instead of the board itself
 	Board:moveLeft()
 end
 
 function Game:moveRight()
-	-- Move Right
-	vim.notify("Move right", vim.log.levels.DEBUG)
+	Board:moveRight()
 end
 
 function Game:moveDown()

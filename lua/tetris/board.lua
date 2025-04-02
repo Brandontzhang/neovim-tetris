@@ -50,7 +50,7 @@ end
 function Board:placePiece()
 	local piece = self.curPiece
 
-	-- TODO: Should be able to place the piece even if it's borders pass the board grid. Add a check before placing down, and change the loop to account for larger piece grid
+	-- TODO: Considerations for moving pieces left and right (potential for negative starting row)
 	for row = piece.row, math.min(piece.row + piece.height - 1, self.height) do
 		for col = piece.col, piece.col + piece.width - 1 do
 			local pieceRow = (row - piece.row) + 1
@@ -69,7 +69,21 @@ function Board:rotateCW()
 end
 
 function Board:moveLeft()
-	self.curPiece:moveLeft()
+	local piece = self.curPiece
+
+	if piece.col > 1 then
+		self:clearPiece()
+		self.curPiece:moveLeft()
+	end
+end
+
+function Board:moveRight()
+	local piece = self.curPiece
+
+	if (piece.col + piece.width) <= self.width then
+		self:clearPiece()
+		self.curPiece:moveRight()
+	end
 end
 
 function Board:gravity()
@@ -84,6 +98,7 @@ function Board:gravity()
 	end
 end
 
+-- FIXME: Some pieces are still going a bit too far down
 function Board:pieceLanded()
 	local piece = self.curPiece
 
