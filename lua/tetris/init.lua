@@ -3,6 +3,7 @@ local Piece = require("tetris.piece")
 local Game = require("tetris.game")
 local constants = require("tetris.constants")
 local tetris = {}
+local timerInit = false
 
 function tetris:start_game()
 	self:open_tetris()
@@ -142,19 +143,22 @@ end
 -- Game timer for automated tasks
 -- Gravity for pieces
 function tetris:gameLoop(buf)
-	local gameTimer = vim.loop.new_timer()
-	gameTimer:start(
-		0,
-		1000,
-		vim.schedule_wrap(function()
-			if not self:is_buffer_open(buf) then
-				return
-			end
+	if not timerInit then
+		local gameTimer = vim.loop.new_timer()
+		timerInit = true
+		gameTimer:start(
+			0,
+			250,
+			vim.schedule_wrap(function()
+				if not self:is_buffer_open(buf) then
+					return
+				end
 
-			Game.gravity()
-			tetris:renderBoard(buf)
-		end)
-	)
+				Game.gravity()
+				tetris:renderBoard(buf)
+			end)
+		)
+	end
 end
 
 return tetris
