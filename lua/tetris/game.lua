@@ -46,14 +46,11 @@ function Game:hardDrop()
 end
 
 function Game:rotateCounterclockwise()
-	-- Rotate Counter Clockwise
-	vim.notify("RCC", vim.log.levels.DEBUG)
+	Board:rotate("CCW")
 end
 
-function Game.rotateClockwise(board)
-	-- Rotate Clockwise
-	vim.notify("RC", vim.log.levels.DEBUG)
-	board:rotateCW()
+function Game.rotateClockwise()
+	Board:rotate("CW")
 end
 
 function Game:holdPiece()

@@ -64,9 +64,9 @@ function Board:placePiece()
 	end
 end
 
-function Board:rotateCW()
+function Board:rotate(direction)
 	self:clearPiece()
-	self.curPiece.rotateCW()
+	self.curPiece:rotate(direction)
 end
 
 function Board:moveLeft()
