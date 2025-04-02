@@ -3,7 +3,7 @@ Piece.__index = Piece
 
 Piece.types = { "I", "T", "S", "Z", "O", "L", "J" }
 
--- TODO: Implement rotation
+-- TODO: Implement wallkicks
 function Piece.new(type)
 	local piece = setmetatable({}, Piece)
 
