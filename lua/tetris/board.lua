@@ -65,6 +65,7 @@ function Board:placePiece()
 end
 
 function Board:rotateCW()
+	self:clearPiece()
 	self.curPiece.rotateCW()
 end
 
@@ -86,6 +87,13 @@ function Board:moveRight()
 	end
 end
 
+function Board:moveDown()
+	if not self:pieceLanded() then
+		self:clearPiece()
+		self.curPiece:moveDown()
+	end
+end
+
 function Board:gravity()
 	local pieceLanded = self:pieceLanded()
 	if pieceLanded then
@@ -94,11 +102,12 @@ function Board:gravity()
 	else
 		self:clearPiece()
 		self.curPiece:moveDown()
+
+		-- TODO: Consider when the piece should be placed. Should consider rotation + movement + gravity, and then place?
 		self:placePiece()
 	end
 end
 
--- FIXME: Some pieces are still going a bit too far down
 function Board:pieceLanded()
 	local piece = self.curPiece
 

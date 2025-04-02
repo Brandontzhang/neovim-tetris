@@ -37,8 +37,7 @@ function Game:moveRight()
 end
 
 function Game:moveDown()
-	-- Move Down
-	vim.notify("Move down", vim.log.levels.DEBUG)
+	Board:moveDown()
 end
 
 function Game:hardDrop()
