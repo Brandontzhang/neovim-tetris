@@ -61,6 +61,8 @@ function Board:placePiece()
 			end
 		end
 	end
+
+	-- TODO: Implement line clearing
 end
 
 -- TODO: Check for surroundings before rotating (aka implement wall kicks)
@@ -184,6 +186,7 @@ function Board:gravity()
 	end
 end
 
+-- FIXME: Occasionally really weird bug where piece drops through other pieces. Seems to be usually with Z?
 function Board:pieceLanded()
 	local piece = self.curPiece
 

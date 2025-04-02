@@ -2,6 +2,9 @@ Game = {}
 
 Board = {}
 
+-- TODO: Score tracking
+-- TODO: Piece queue and generation
+
 function Game:setBoard(board)
 	Board = board
 end
