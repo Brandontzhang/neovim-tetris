@@ -166,14 +166,14 @@ function Board:leftEdge()
 end
 
 function Board:moveDown()
-	if not self:pieceLanded() then
+	if not self:bottomEdge()() then
 		self:clearPiece()
 		self.curPiece:moveDown()
 	end
 end
 
 function Board:gravity()
-	local pieceLanded = self:pieceLanded()
+	local pieceLanded = self:bottomEdge()
 	if pieceLanded then
 		-- TODO: do checks before locking in the piece
 		self:generatePiece()
@@ -186,41 +186,42 @@ function Board:gravity()
 	end
 end
 
--- FIXME: Occasionally really weird bug where piece drops through other pieces. Seems to be usually with Z?
-function Board:pieceLanded()
+function Board:bottomEdge()
 	local piece = self.curPiece
 
-	-- 1. Get the surrounding blocks in the area around the current piece
-	-- TODO: Memoize the value if the location and piece haven't changed
 	local height = 0
 	local localGrid = {}
+
+	-- I think the error has to do with piece.row being 0 ...
 	for row = piece.row, math.min(piece.row + piece.height, self.height) do
-		local pieceRow = (row - piece.row) + 1
-		localGrid[pieceRow] = {}
+		local localRowIndex = (row - piece.row) + 1
+		localGrid[localRowIndex] = {}
+		local localRow = localGrid[localRowIndex]
 
-		for col = piece.col, piece.col + piece.width - 1 do
-			local pieceCol = (col - piece.col) + 1
+		for col = piece.col, piece.col + piece.width do
+			local localColIndex = (col - piece.col) + 1
 
-			if (pieceRow <= piece.height and pieceCol <= piece.col) and piece.grid[pieceRow][pieceCol] == 1 then
-				localGrid[pieceRow][pieceCol] = "x"
+			if col <= 0 then
+				goto continue
+			elseif localRowIndex <= piece.height and piece.grid[localRowIndex][localColIndex] == 1 then
+				table.insert(localRow, "x")
 			else
-				localGrid[pieceRow][pieceCol] = self.grid[row][col]
+				table.insert(localRow, self.grid[row][col])
 			end
+			::continue::
 		end
 
 		height = height + 1
 	end
 
-	-- 2. if the piece is at the bottom, or has another piece below it, return true
 	for rowIndex, row in ipairs(localGrid) do
 		for colIndex, val in ipairs(row) do
-			if
-				val == "x"
-				and (
-					rowIndex == height
-					or (localGrid[rowIndex + 1][colIndex] ~= " " and localGrid[rowIndex + 1][colIndex] ~= "x")
-				)
-			then
+			local reachedBottom = rowIndex == height
+			local touchingDifPiece = rowIndex + 1 < #localGrid
+				and localGrid[rowIndex + 1][colIndex] ~= " "
+				and localGrid[rowIndex + 1][colIndex] ~= "x"
+
+			if val == "x" and (reachedBottom or touchingDifPiece) then
 				return true
 			end
 		end
