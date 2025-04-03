@@ -61,8 +61,8 @@ function Game:holdPiece()
 	vim.notify("Hold", vim.log.levels.DEBUG)
 end
 
-function Game.gravity()
-	Board:gravity()
+function Game.tick()
+	Board:tick()
 end
 
 return Game
