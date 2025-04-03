@@ -97,6 +97,38 @@ function Piece:moveDown()
 	self.row = self.row + 1
 end
 
+-- Returns 1 for tetris block, 0 for empty space, -1 for out of bounds
+function Piece:getBlock(row, col)
+	if row >= 1 and row <= self.height and col >= 1 and col <= self.width then
+		return self.grid[row][col]
+	else
+		return -1
+	end
+end
+
+-- INFO: Doesn't seem to be necessary, but I wrote it and I'll keep it here for now unless it really is necessary
+-- Checking if the piece has occupied it's bottom rows for specific rotations
+-- Ex. The I piece can move down different amounts depending on it's rotation:
+-- X X X X    X X I X    X X X X    X I X X
+-- I I I I    X X I X    X X X X    X I X X
+-- X X X X    X X I X    I I I I    X I X X
+-- X X X X    X X I X    X X X X    X I X X
+-- 2 rows     0 row      1 row      0 rows
+function Piece:availBottomSpace()
+	local availSpace = 0
+	for rowIndex = #self.grid, 1, -1 do
+		for colIndex = 1, #self.grid[1] do
+			if self.grid[rowIndex][colIndex] == 1 then
+				goto continue
+			end
+		end
+		availSpace = availSpace + 1
+	end
+
+	::continue::
+	return availSpace
+end
+
 function Piece:rotate(direction)
 	if self.type == "O" then
 		return

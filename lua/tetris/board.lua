@@ -82,39 +82,73 @@ function Board:clearLine()
 	end
 end
 
--- TODO: Refactor for better readability and memoization
--- Technically only need the right two columns as well
--- FIXME: Combine with leftEdge and bottomEdge for getting surrounding values
-function Board:rightEdge()
+-- Returns a 2D array representing the grid surrounding the current piece. +1 on left, right, and bottom
+-- Ex. X C X X X    (C is the piece's row/col coords)
+--     X J X X X
+--     X J J J X
+--     X X X X X
+-- Different edge cases (left, right, bottom of board). Returns:
+-- Left       Right     Bottom
+-- C X X X    X C X X   X C X X X
+-- J X X X    X J X X   X J X X X
+-- J J J X    X J J J   X J J J X
+-- X X X X    X X X X
+-- Can also return different combinations of above.  Ex. Bottom right edge.
+function Board:getPieceSurroundings()
 	local piece = self.curPiece
-	local localGrid = {}
+	local retGrid = {}
 
-	-- INFO:
-	-- Local Coords are with respect to the piece's grid
-	-- col/row are wtih respect to the board's grid
-	-- Reaching one further if necessary to check surrounding
+	for gridRow = piece.row, math.min(piece.row + piece.height, self.height) do
+		table.insert(retGrid, {})
+		local curRow = retGrid[#retGrid]
+		for gridCol = piece.col - 1, piece.col + piece.width do
+			-- Left or right edges
+			if gridCol == 0 or gridCol == self.width + 1 then
+				goto skipColumn
+			end
 
-	for row = piece.row, piece.row + piece.height - 1 do
-		local localRow = (row - piece.row) + 1
-		localGrid[localRow] = {}
-
-		for col = piece.col, math.min(piece.col + piece.width + 1, self.width) do
-			local localCol = (col - piece.col) + 1
-
-			if piece.grid[localRow][localCol] == 1 then
-				localGrid[localRow][localCol] = "x"
+			-- Access the current pieces location if not checking out of bounds
+			local pieceRow = gridRow - piece.row + 1
+			local pieceCol = gridCol - piece.col + 1
+			if piece:getBlock(pieceRow, pieceCol) == 1 then
+				table.insert(curRow, "x")
 			else
-				localGrid[localRow][localCol] = self.grid[row][col]
+				table.insert(curRow, self.grid[gridRow][gridCol])
+			end
+
+			::skipColumn::
+		end
+	end
+
+	return retGrid
+end
+
+function Board:leftCollision()
+	local surrounding = self:getPieceSurroundings()
+
+	for rowIndex, row in ipairs(surrounding) do
+		for colIndex, val in ipairs(row) do
+			local reachedEdge = (colIndex == 1)
+			local touchingDifPiece = surrounding[rowIndex][colIndex - 1] ~= " "
+				and surrounding[rowIndex][colIndex - 1] ~= "x"
+
+			if val == "x" and (reachedEdge or touchingDifPiece) then
+				return true
 			end
 		end
 	end
 
-	for rowIndex, row in ipairs(localGrid) do
+	return false
+end
+
+function Board:rightCollision()
+	local surrounding = self:getPieceSurroundings()
+
+	for rowIndex, row in ipairs(surrounding) do
 		for colIndex, val in ipairs(row) do
 			local reachedEdge = (colIndex == #row)
-			local touchingDifPiece = localGrid[rowIndex][colIndex + 1] ~= " "
-				and localGrid[rowIndex][colIndex + 1] ~= "x"
-
+			local touchingDifPiece = surrounding[rowIndex][colIndex + 1] ~= " "
+				and surrounding[rowIndex][colIndex + 1] ~= "x"
 			if val == "x" and (reachedEdge or touchingDifPiece) then
 				return true
 			end
@@ -124,79 +158,15 @@ function Board:rightEdge()
 	return false
 end
 
-function Board:leftEdge()
-	local piece = self.curPiece
-	local localGrid = {}
+function Board:bottomCollision()
+	local surrounding = self:getPieceSurroundings()
 
-	for row = piece.row, piece.row + piece.height - 1 do
-		local localRowIndex = (row - piece.row) + 1
-		localGrid[localRowIndex] = {}
-		local localRow = localGrid[localRowIndex]
-
-		for col = math.max(0, piece.col - 1), piece.col + piece.width do
-			local localColIndex = (col - piece.col) + 1
-
-			if localColIndex <= 0 then
-				table.insert(localRow, self.grid[row][col])
-			elseif piece.grid[localRowIndex][localColIndex] == 1 then
-				table.insert(localRow, "x")
-			else
-				table.insert(localRow, self.grid[row][col])
-			end
-		end
-	end
-
-	for rowIndex, row in ipairs(localGrid) do
-		local str = ""
+	for rowIndex, row in ipairs(surrounding) do
 		for colIndex, val in ipairs(row) do
-			str = str .. val
-			local reachedEdge = (colIndex == 1)
-			local touchingDifPiece = localGrid[rowIndex][colIndex - 1] ~= " "
-				and localGrid[rowIndex][colIndex - 1] ~= "x"
-
-			if val == "x" and (reachedEdge or touchingDifPiece) then
-				return true
-			end
-		end
-	end
-
-	return false
-end
-
-function Board:bottomEdge()
-	local piece = self.curPiece
-
-	local height = 0
-	local localGrid = {}
-
-	-- I think the error has to do with piece.row being 0 ...
-	for row = piece.row, math.min(piece.row + piece.height, self.height) do
-		local localRowIndex = (row - piece.row) + 1
-		localGrid[localRowIndex] = {}
-		local localRow = localGrid[localRowIndex]
-
-		for col = piece.col, piece.col + piece.width do
-			local localColIndex = (col - piece.col) + 1
-
-			if col <= 0 then
-				goto continue
-			elseif localRowIndex <= piece.height and piece.grid[localRowIndex][localColIndex] == 1 then
-				table.insert(localRow, "x")
-			else
-				table.insert(localRow, self.grid[row][col])
-			end
-			::continue::
-		end
-
-		height = height + 1
-	end
-
-	for rowIndex, row in ipairs(localGrid) do
-		for colIndex, val in ipairs(row) do
-			local reachedBottom = rowIndex == height
-			local touchingDifPiece = rowIndex + 1 < #localGrid
-				and localGrid[rowIndex + 1][colIndex] ~= " "
-				and localGrid[rowIndex + 1][colIndex] ~= "x"
+			local reachedBottom = rowIndex == #surrounding
+			local touchingDifPiece = rowIndex + 1 <= #surrounding
+				and surrounding[rowIndex + 1][colIndex] ~= " "
+				and surrounding[rowIndex + 1][colIndex] ~= "x"
 
 			if val == "x" and (reachedBottom or touchingDifPiece) then
 				return true
@@ -208,7 +178,7 @@ function Board:bottomEdge()
 end
 
 function Board:tick()
-	local pieceLanded = self:bottomEdge()
+	local pieceLanded = self:bottomCollision()
 	if pieceLanded then
 		-- TODO: do checks before locking in the piece
 		self:generatePiece()
@@ -229,21 +199,21 @@ function Board:rotate(direction)
 end
 
 function Board:moveLeft()
-	if not self:leftEdge() then
+	if not self:leftCollision() then
 		self:clearPiece()
 		self.curPiece:moveLeft()
 	end
 end
 
 function Board:moveRight()
-	if not self:rightEdge() then
+	if not self:rightCollision() then
 		self:clearPiece()
 		self.curPiece:moveRight()
 	end
 end
 
 function Board:moveDown()
-	if not self:bottomEdge()() then
+	if not self:bottomCollision() then
 		self:clearPiece()
 		self.curPiece:moveDown()
 	end

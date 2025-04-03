@@ -154,7 +154,7 @@ function tetris:gameLoop(buf)
 					return
 				end
 
-				Game.gravity()
+				Game.tick()
 				tetris:renderBoard(buf)
 			end)
 		)
