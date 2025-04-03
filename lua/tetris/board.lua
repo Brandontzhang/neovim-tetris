@@ -28,6 +28,24 @@ function Board:generatePiece()
 	self:placePiece()
 end
 
+-- Draws the piece onto the grid
+function Board:drawPiece()
+	local piece = self.curPiece
+
+	for row = piece.row, math.min(piece.row + piece.height - 1, self.height) do
+		for col = piece.col, piece.col + piece.width - 1 do
+			local pieceRow = (row - piece.row) + 1
+			local pieceCol = (col - piece.col) + 1
+			local val = piece.grid[pieceRow][pieceCol]
+
+			if val == 1 then
+				self.grid[row][col] = piece.type
+			end
+		end
+	end
+end
+
+-- Clears the piece from the grid
 function Board:clearPiece()
 	local piece = self.curPiece
 
@@ -47,22 +65,7 @@ function Board:clearPiece()
 	end
 end
 
-function Board:drawPiece()
-	local piece = self.curPiece
-
-	for row = piece.row, math.min(piece.row + piece.height - 1, self.height) do
-		for col = piece.col, piece.col + piece.width - 1 do
-			local pieceRow = (row - piece.row) + 1
-			local pieceCol = (col - piece.col) + 1
-			local val = piece.grid[pieceRow][pieceCol]
-
-			if val == 1 then
-				self.grid[row][col] = piece.type
-			end
-		end
-	end
-end
-
+-- Goes through the board to remove any lines that are filled completely
 function Board:clearLine()
 	for index, row in ipairs(self.grid) do
 		local isFilled = true
@@ -76,26 +79,6 @@ function Board:clearLine()
 			table.remove(self.grid, index)
 			table.insert(self.grid, 1, { " ", " ", " ", " ", " ", " ", " ", " ", " ", " " })
 		end
-	end
-end
-
--- TODO: Check for surroundings before rotating (aka implement wall kicks)
-function Board:rotate(direction)
-	self:clearPiece()
-	self.curPiece:rotate(direction)
-end
-
-function Board:moveLeft()
-	if not self:leftEdge() then
-		self:clearPiece()
-		self.curPiece:moveLeft()
-	end
-end
-
-function Board:moveRight()
-	if not self:rightEdge() then
-		self:clearPiece()
-		self.curPiece:moveRight()
 	end
 end
 
@@ -244,6 +227,26 @@ function Board:bottomEdge()
 	end
 
 	return false
+end
+
+-- TODO: Check for surroundings before rotating (aka implement wall kicks)
+function Board:rotate(direction)
+	self:clearPiece()
+	self.curPiece:rotate(direction)
+end
+
+function Board:moveLeft()
+	if not self:leftEdge() then
+		self:clearPiece()
+		self.curPiece:moveLeft()
+	end
+end
+
+function Board:moveRight()
+	if not self:rightEdge() then
+		self:clearPiece()
+		self.curPiece:moveRight()
+	end
 end
 
 function Board:render()
