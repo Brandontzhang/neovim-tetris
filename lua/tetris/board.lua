@@ -47,7 +47,7 @@ function Board:clearPiece()
 	end
 end
 
-function Board:placePiece()
+function Board:drawPiece()
 	local piece = self.curPiece
 
 	for row = piece.row, math.min(piece.row + piece.height - 1, self.height) do
@@ -61,8 +61,22 @@ function Board:placePiece()
 			end
 		end
 	end
+end
 
-	-- TODO: Implement line clearing
+function Board:clearLine()
+	for index, row in ipairs(self.grid) do
+		local isFilled = true
+		for _, val in ipairs(row) do
+			if val == " " then
+				isFilled = false
+			end
+		end
+
+		if isFilled then
+			table.remove(self.grid, index)
+			table.insert(self.grid, 1, { " ", " ", " ", " ", " ", " ", " ", " ", " ", " " })
+		end
+	end
 end
 
 -- TODO: Check for surroundings before rotating (aka implement wall kicks)
@@ -87,6 +101,7 @@ end
 
 -- TODO: Refactor for better readability and memoization
 -- Technically only need the right two columns as well
+-- FIXME: Combine with leftEdge and bottomEdge for getting surrounding values
 function Board:rightEdge()
 	local piece = self.curPiece
 	local localGrid = {}
@@ -182,7 +197,8 @@ function Board:gravity()
 		self.curPiece:moveDown()
 
 		-- TODO: Consider when the piece should be placed. Should consider rotation + movement + gravity, and then place?
-		self:placePiece()
+		-- TODO: Separate drawing a piece and locking it in
+		self:drawPiece()()
 	end
 end
 
