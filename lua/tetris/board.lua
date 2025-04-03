@@ -190,7 +190,7 @@ function Board:tick()
 		self:generatePiece()
 	else
 		self:clearPiece()
-		self.curPiece:moveDown()
+		self.curPiece:softDrop()
 
 		-- TODO: Consider when the piece should be placed. Should consider rotation + movement + gravity, and then place?
 		-- TODO: Separate drawing a piece and locking it in
@@ -218,10 +218,10 @@ function Board:moveRight()
 	end
 end
 
-function Board:moveDown()
+function Board:softDrop()
 	if not self:bottomCollision() then
 		self:clearPiece()
-		self.curPiece:moveDown()
+		self.curPiece:softDrop()
 	end
 end
 

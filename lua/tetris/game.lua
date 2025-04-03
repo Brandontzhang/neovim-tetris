@@ -25,7 +25,7 @@ function Game:setTetrisKeymaps(buffer)
 		self:moveRight()
 	end, opts)
 	vim.keymap.set("n", "<Down>", function()
-		self:moveDown()
+		self:softDrop()
 	end, opts)
 	vim.keymap.set("n", "<Up>", function()
 		self:rotateClockwise()
@@ -56,8 +56,9 @@ function Game:moveRight()
 	self.board:moveRight()
 end
 
-function Game:moveDown()
-	self.board:moveDown()
+-- TODO: Drop on every single frame
+function Game:softDrop()
+	self.board:softDrop()
 end
 
 function Game:hardDrop()

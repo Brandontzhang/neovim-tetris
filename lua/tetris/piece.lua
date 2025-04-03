@@ -93,7 +93,7 @@ function Piece:moveRight()
 	self.col = self.col + 1
 end
 
-function Piece:moveDown()
+function Piece:softDrop()
 	self.row = self.row + 1
 end
 
