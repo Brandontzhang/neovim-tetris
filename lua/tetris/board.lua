@@ -163,28 +163,6 @@ function Board:leftEdge()
 	return false
 end
 
-function Board:moveDown()
-	if not self:bottomEdge()() then
-		self:clearPiece()
-		self.curPiece:moveDown()
-	end
-end
-
-function Board:gravity()
-	local pieceLanded = self:bottomEdge()
-	if pieceLanded then
-		-- TODO: do checks before locking in the piece
-		self:generatePiece()
-	else
-		self:clearPiece()
-		self.curPiece:moveDown()
-
-		-- TODO: Consider when the piece should be placed. Should consider rotation + movement + gravity, and then place?
-		-- TODO: Separate drawing a piece and locking it in
-		self:drawPiece()()
-	end
-end
-
 function Board:bottomEdge()
 	local piece = self.curPiece
 
@@ -229,6 +207,21 @@ function Board:bottomEdge()
 	return false
 end
 
+function Board:tick()
+	local pieceLanded = self:bottomEdge()
+	if pieceLanded then
+		-- TODO: do checks before locking in the piece
+		self:generatePiece()
+	else
+		self:clearPiece()
+		self.curPiece:moveDown()
+
+		-- TODO: Consider when the piece should be placed. Should consider rotation + movement + gravity, and then place?
+		-- TODO: Separate drawing a piece and locking it in
+		self:drawPiece()()
+	end
+end
+
 -- TODO: Check for surroundings before rotating (aka implement wall kicks)
 function Board:rotate(direction)
 	self:clearPiece()
@@ -246,6 +239,13 @@ function Board:moveRight()
 	if not self:rightEdge() then
 		self:clearPiece()
 		self.curPiece:moveRight()
+	end
+end
+
+function Board:moveDown()
+	if not self:bottomEdge()() then
+		self:clearPiece()
+		self.curPiece:moveDown()
 	end
 end
 
