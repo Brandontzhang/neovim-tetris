@@ -1,46 +1,63 @@
-Game = {}
+local Board = require("tetris.board")
 
-Board = {}
+Game = {}
+Game.__index = Game
 
 -- TODO: Score tracking
 -- TODO: Piece queue and generation
 
-function Game:setBoard(board)
-	Board = board
+function Game:new()
+	local game = setmetatable({}, Game)
+
+	self.board = Board:new()
+
+	return game
 end
 
-function Game:getBoard()
-	return Board
-end
-
-function Game:setTetrisKeymaps(buf)
-	local opts = { noremap = true, silent = true, buffer = buf }
+function Game:setTetrisKeymaps(buffer)
+	local opts = { noremap = true, silent = true, buffer = buffer }
 
 	-- Movement
-	vim.keymap.set("n", "<Left>", "<Cmd>lua require('tetris.game').moveLeft()<CR>", opts)
-	vim.keymap.set("n", "<Right>", "<Cmd>lua require('tetris.game').moveRight()<CR>", opts)
-	vim.keymap.set("n", "<Down>", "<Cmd>lua require('tetris.game').moveDown()<CR>", opts)
-	vim.keymap.set("n", "<Up>", "<Cmd>lua require('tetris.game').rotateClockwise()<CR>", opts)
-	vim.keymap.set("n", "<Space>", "<Cmd>lua require('tetris.game').hardDrop()<CR>", opts)
+	vim.keymap.set("n", "<Left>", function()
+		self:moveLeft()
+	end, opts)
+	vim.keymap.set("n", "<Right>", function()
+		self:moveRight()
+	end, opts)
+	vim.keymap.set("n", "<Down>", function()
+		self:moveDown()
+	end, opts)
+	vim.keymap.set("n", "<Up>", function()
+		self:rotateClockwise()
+	end, opts)
+	vim.keymap.set("n", "<Space>", function()
+		self:hardDrop()
+	end, opts)
 
 	-- Rotation
-	vim.keymap.set("n", "z", "<Cmd>lua require('tetris.game').rotateCounterclockwise()<CR>", opts)
-	vim.keymap.set("n", "x", "<Cmd>lua require('tetris.game').rotateClockwise()<CR>", opts)
+	vim.keymap.set("n", "z", function()
+		self:rotateCounterClockwise()
+	end, opts)
+	vim.keymap.set("n", "x", function()
+		self:rotateClockwise()
+	end, opts)
 
 	-- Hold piece
-	vim.keymap.set("n", "c", "<Cmd>lua require('tetris.game').holdPiece()<CR>", opts)
+	vim.keymap.set("n", "c", function()
+		self:holdPiece()
+	end, opts)
 end
 
 function Game:moveLeft()
-	Board:moveLeft()
+	self.board:moveLeft()
 end
 
 function Game:moveRight()
-	Board:moveRight()
+	self.board:moveRight()
 end
 
 function Game:moveDown()
-	Board:moveDown()
+	self.board:moveDown()
 end
 
 function Game:hardDrop()
@@ -49,11 +66,11 @@ function Game:hardDrop()
 end
 
 function Game:rotateCounterclockwise()
-	Board:rotate("CCW")
+	self.board:rotate("CCW")
 end
 
-function Game.rotateClockwise()
-	Board:rotate("CW")
+function Game:rotateClockwise()
+	self.board:rotate("CW")
 end
 
 function Game:holdPiece()
@@ -61,8 +78,12 @@ function Game:holdPiece()
 	vim.notify("Hold", vim.log.levels.DEBUG)
 end
 
-function Game.tick()
-	Board:tick()
+function Game:renderBoard()
+	return self.board:render()
+end
+
+function Game:tick()
+	self.board:tick()
 end
 
 return Game
