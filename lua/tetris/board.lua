@@ -25,7 +25,7 @@ function Board:generatePiece()
 	local randomType = Piece.types[math.random(1, #Piece.types)]
 	self.curPiece = Piece.new(randomType)
 
-	self:placePiece()
+	self:drawPiece()
 end
 
 -- Draws the piece onto the grid
@@ -218,7 +218,7 @@ function Board:tick()
 
 		-- TODO: Consider when the piece should be placed. Should consider rotation + movement + gravity, and then place?
 		-- TODO: Separate drawing a piece and locking it in
-		self:drawPiece()()
+		self:drawPiece()
 	end
 end
 
