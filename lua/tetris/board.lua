@@ -1,24 +1,30 @@
 local Piece = require("tetris.piece")
 
 local Board = {}
+Board.__index = Board
 
 -- INFO: There are 20 rows (height) and 10 columns (width) => board[row][col]
 function Board:new()
-	local instance = setmetatable({}, { __index = Board })
-	instance.width = 10
-	instance.height = 22 -- allowing for extra space at the top for spawning and rotation
-	instance.grid = {}
+	local board = setmetatable({}, { __index = Board })
 
-	for row = 1, instance.height do
-		instance.grid[row] = {}
-		for col = 1, instance.width do
-			instance.grid[row][col] = " "
+	board:setup()
+
+	return board
+end
+
+function Board:setup()
+	self.width = 10
+	self.height = 22 -- allowing for extra space at the top for spawning and rotation
+	self.grid = {}
+
+	for row = 1, self.height do
+		self.grid[row] = {}
+		for col = 1, self.width do
+			self.grid[row][col] = " "
 		end
 	end
 
-	instance:generatePiece()
-
-	return instance
+	self:generatePiece()
 end
 
 function Board:generatePiece()
