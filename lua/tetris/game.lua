@@ -36,7 +36,7 @@ function Game:setTetrisKeymaps(buffer)
 
 	-- Rotation
 	vim.keymap.set("n", "z", function()
-		self:rotateCounterClockwise()
+		self:rotateCounterclockwise()
 	end, opts)
 	vim.keymap.set("n", "x", function()
 		self:rotateClockwise()
