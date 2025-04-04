@@ -16,7 +16,7 @@ end
 
 function Tetris:setupGame()
 	self.game = Game:new()
-	self.game:setTetrisKeymaps(self.view.buffer)
+	self.game:setUserKeymaps(self.view.buffer)
 end
 
 function Tetris:render()
@@ -27,22 +27,29 @@ end
 -- Game timer for automated tasks
 -- Gravity for pieces
 function Tetris:gameLoop()
-	if not timerInit then
-		local gameTimer = vim.loop.new_timer()
+	if timerInit then
+		return
+	else
 		timerInit = true
-		gameTimer:start(
-			0,
-			250,
-			vim.schedule_wrap(function()
-				if not self.view:isBufOpen() then
-					return
-				end
-
-				self.game:tick()
-				self:render()
-			end)
-		)
 	end
+
+	local gameTimer = vim.uv.new_timer()
+	if gameTimer == nil then
+		return
+	end
+
+	gameTimer:start(
+		0,
+		30,
+		vim.schedule_wrap(function()
+			if not self.view:isBufOpen() then
+				return
+			end
+
+			self.game:tick()
+			self:render()
+		end)
+	)
 end
 
 return Tetris
