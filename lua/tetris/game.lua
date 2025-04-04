@@ -14,77 +14,51 @@ function Game:new()
 	return game
 end
 
-function Game:setTetrisKeymaps(buffer)
+function Game:setUserKeymaps(buffer)
 	local opts = { noremap = true, silent = true, buffer = buffer }
 
 	-- Movement
 	vim.keymap.set("n", "<Left>", function()
-		self:moveLeft()
+		self.board:moveLeft()
 	end, opts)
 	vim.keymap.set("n", "<Right>", function()
-		self:moveRight()
+		self.board:moveRight()
 	end, opts)
 	vim.keymap.set("n", "<Down>", function()
-		self:softDrop()
+		self.board:softDrop()
 	end, opts)
 	vim.keymap.set("n", "<Up>", function()
-		self:rotateClockwise()
+		self.board:rotate("CW")
 	end, opts)
 	vim.keymap.set("n", "<Space>", function()
-		self:hardDrop()
+		self.board:hardDrop()
 	end, opts)
 
 	-- Rotation
 	vim.keymap.set("n", "z", function()
-		self:rotateCounterclockwise()
+		self.board:rotate("CCW")
 	end, opts)
 	vim.keymap.set("n", "x", function()
-		self:rotateClockwise()
+		self.board:rotate("CW")
 	end, opts)
 
 	-- Hold piece
 	vim.keymap.set("n", "c", function()
-		self:holdPiece()
+		self.board:holdPiece()
 	end, opts)
-end
-
-function Game:moveLeft()
-	self.board:moveLeft()
-end
-
-function Game:moveRight()
-	self.board:moveRight()
-end
-
--- TODO: Drop on every single frame
-function Game:softDrop()
-	self.board:softDrop()
-end
-
-function Game:hardDrop()
-	-- Hard Drop
-	vim.notify("Hard drop", vim.log.levels.DEBUG)
-end
-
-function Game:rotateCounterclockwise()
-	self.board:rotate("CCW")
-end
-
-function Game:rotateClockwise()
-	self.board:rotate("CW")
-end
-
-function Game:holdPiece()
-	-- Hold Piece
-	vim.notify("Hold", vim.log.levels.DEBUG)
 end
 
 function Game:renderBoard()
 	return self.board:render()
 end
 
+-- TODO: Implement timing. This function is called every 30ms
 function Game:tick()
 	self.board:tick()
+
+	-- checks
+	-- 1. Row completion
+	-- 2. Gravity drop based on speed
 end
 
 return Game
