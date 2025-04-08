@@ -1,5 +1,6 @@
 local View = require("tetris.view")
 local Game = require("tetris.game")
+local UserInputHandler = require("tetris.userInputHandler")
 local Tetris = {}
 local timerInit = false
 
@@ -16,7 +17,11 @@ end
 
 function Tetris:setupGame()
 	self.game = Game:new()
-	self.game:setUserKeymaps(self.view.buffer)
+end
+
+function Tetris:setupUserInputHandler()
+	self.userInputHandler = UserInputHandler:new()
+	self.userInputHandler:setUserKeymaps(self.view.buffer)
 end
 
 function Tetris:render()

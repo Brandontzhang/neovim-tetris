@@ -6,16 +6,16 @@ Board.__index = Board
 -- INFO: There are 20 rows (height) and 10 columns (width) => board[row][col]
 function Board:new()
 	local board = setmetatable({}, { __index = Board })
-
 	board:setup()
 
 	return board
 end
 
 function Board:setup()
+	self.grid = {}
 	self.width = 10
 	self.height = 22 -- allowing for extra space at the top for spawning and rotation
-	self.grid = {}
+	self.speed = 27
 
 	for row = 1, self.height do
 		self.grid[row] = {}
@@ -183,18 +183,17 @@ function Board:bottomCollision()
 	return false
 end
 
+-- TODO: Move some of the game logic out of here into game
+-- TODO: Consider when the piece should be placed. Should consider rotation + movement + gravity, and then place?
+-- TODO: Separate drawing a piece and locking it in
+-- TODO: do checks before locking in the piece
 function Board:tick()
 	local pieceLanded = self:bottomCollision()
 	if pieceLanded then
-		-- TODO: do checks before locking in the piece
 		self:generatePiece()
 	else
 		self:clearPiece()
-		self.curPiece:softDrop()
-
-		-- TODO: Consider when the piece should be placed. Should consider rotation + movement + gravity, and then place?
-		-- TODO: Separate drawing a piece and locking it in
-		self:drawPiece()
+		self.curPiece:moveDown()
 	end
 end
 
@@ -221,7 +220,7 @@ end
 function Board:softDrop()
 	if not self:bottomCollision() then
 		self:clearPiece()
-		self.curPiece:softDrop()
+		self.curPiece:moveDown()
 	end
 end
 
