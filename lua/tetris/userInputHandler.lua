@@ -2,17 +2,10 @@ UserInputHandler = {}
 UserInputHandler.__index = UserInputHandler
 
 function UserInputHandler:new()
-	local userInputHandler = setmetatable({}, Game)
-
-	userInputHandler.tickCount = 0
-	userInputHandler.timers = {}
-	userInputHandler.inputBuffer = {}
+	local userInputHandler = setmetatable({}, UserInputHandler)
 
 	-- TODO: Implement buffer size limit
-	-- User input update
-	userInputHandler:addTimer(15, function()
-		userInputHandler:handleInput()
-	end)
+	userInputHandler.inputBuffer = {}
 
 	return userInputHandler
 end
@@ -55,7 +48,7 @@ function UserInputHandler:setUserKeymaps(buffer)
 	end, opts)
 end
 
-function UserInputHandler:handleInput()
+function UserInputHandler:handleInput(board)
 	local input = table.remove(self.inputBuffer, 1)
 
 	if input == nil then
@@ -64,41 +57,31 @@ function UserInputHandler:handleInput()
 
 	local actions = {
 		LEFT = function()
-			self.board:moveLeft()
+			board:moveLeft()
 		end,
 		RIGHT = function()
-			self.board:moveRight()
+			board:moveRight()
 		end,
 		SD = function()
-			self.board:softDrop()
+			board:softDrop()
 		end,
 		HD = function()
-			self.board:hardDrop()
+			board:hardDrop()
 		end,
 		CWR = function()
-			self.board:rotate("CW")
+			board:rotate("CW")
 		end,
 		CCWR = function()
-			self.board:rotate("CCW")
+			board:rotate("CCW")
 		end,
 		HOLD = function()
-			self.board:hold()
+			board:hold()
 		end,
 	}
 
 	-- Run action
 	actions[input]()
-	self.board:drawPiece()
+	board:drawPiece()
 end
 
--- TODO: Tickcount managed by controller
-function UserInputHandler:update(tickCount)
-	self.tickCount = self.tickCount + 1
-
-	for _, timer in ipairs(self.timers) do
-		if self.tickCount - timer.lastTrigger >= timer.interval then
-			timer.callback()
-			timer.lastTrigger = self.tickCount
-		end
-	end
-end
+return UserInputHandler

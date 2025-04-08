@@ -1,4 +1,5 @@
 local Board = require("tetris.board")
+local UserInputHandler = require("tetris.userInputHandler")
 
 Game = {}
 Game.__index = Game
@@ -13,10 +14,23 @@ function Game:new()
 	game.tickCount = 0
 	game.timers = {}
 
+	game.userInputHandler = UserInputHandler:new()
+
+	-- TODO: Main loop timer
+	-- Should handle user inputs, logic updates. (What every frame of the game should display)
+
+	-- TODO: Gravity timer
+	-- Speed up and down, maximum matching the frame rate
+
+	-- TODO: Lock delay timer
+	-- timer when the game piece is hitting something, before it's locked. This might be in the logic updates instead
+
 	-- Game logic update
 	game:addTimer(15, function()
 		game.board:tick()
 		game.board:drawPiece()
+
+		game.userInputHandler:handleInput(game.board)
 	end)
 
 	return game

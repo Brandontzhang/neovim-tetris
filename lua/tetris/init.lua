@@ -17,11 +17,7 @@ end
 
 function Tetris:setupGame()
 	self.game = Game:new()
-end
-
-function Tetris:setupUserInputHandler()
-	self.userInputHandler = UserInputHandler:new()
-	self.userInputHandler:setUserKeymaps(self.view.buffer)
+	self.game.userInputHandler:setUserKeymaps(self.view.buffer)
 end
 
 function Tetris:render()
