@@ -52,7 +52,7 @@ end
 
 -- INFO: This function is called every 30ms
 -- TODO: Intake tickCount. Should be managed by controller
-function Game:tick(tickCount)
+function Game:tick()
 	self.tickCount = self.tickCount + 1
 
 	for _, timer in ipairs(self.timers) do
