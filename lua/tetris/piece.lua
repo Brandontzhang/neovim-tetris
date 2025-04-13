@@ -7,6 +7,7 @@ Piece.types = { "I", "T", "S", "Z", "O", "L", "J" }
 function Piece.new(type)
 	local piece = setmetatable({}, Piece)
 
+	piece.movementLockCount = 0
 	piece:setupGridDimensions(type)
 	piece:initGridValues()
 
@@ -180,6 +181,17 @@ function Piece:rotate(direction)
 	elseif direction == "CCW" then
 		self.grid = flipCol()
 	end
+end
+
+-- TODO: Implement delayed locking
+-- INFO: A piece's lock delay should reset after movement or rotating the pieces. Implement a limit on rotations and movement
+-- 15 total movements before the piece is locked in
+-- if the vertical position changes more than 2/3 (tbd), reset the movement count
+function Piece:canLock()
+	if self.movementLockCount >= 15 then
+		return true
+	end
+	return true
 end
 
 return Piece

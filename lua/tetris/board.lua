@@ -183,18 +183,23 @@ function Board:bottomCollision()
 	return false
 end
 
--- TODO: Move some of the game logic out of here into game
 -- TODO: Consider when the piece should be placed. Should consider rotation + movement + gravity, and then place?
--- TODO: Separate drawing a piece and locking it in
 -- TODO: do checks before locking in the piece
-function Board:tick()
+function Board:lockPiece()
 	local pieceLanded = self:bottomCollision()
-	if pieceLanded then
-		self:generatePiece()
-	else
-		self:clearPiece()
-		self.curPiece:moveDown()
+	local piece = self.curPiece
+	if pieceLanded and piece:canLock() then
+		self:drawPiece() -- Draw the piece on the location
+		self:generatePiece() -- generate new piece
+
+		-- TODO: line should be cleared after piece is locked in
+		self:clearLine()
 	end
+end
+
+function Board:gravity()
+	self:clearPiece()
+	self.curPiece:moveDown()
 end
 
 -- TODO: Check for surroundings before rotating (aka implement wall kicks)

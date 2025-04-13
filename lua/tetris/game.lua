@@ -21,29 +21,31 @@ function Game:new()
 
 	-- TODO: Gravity timer
 	-- Speed up and down, maximum matching the frame rate
+	game:addTimer(30, function()
+		local board = game.board
+
+		board:gravity()
+	end)
 
 	-- TODO: Lock delay timer
 	-- timer when the game piece is hitting something, before it's locked. This might be in the logic updates instead
 
-	-- Game logic update
-	game:addTimer(15, function()
-		game:frameTimer()
+	-- INFO: Contains the logic of the game that happens every single frame of the game
+	game:addTimer(1, function()
+		local board = game.board
+
+		board:lockPiece()
+		board:drawPiece()
+
+		game.userInputHandler:handleInput(board)
 	end)
 
 	return game
 end
 
+-- TODO: Convert interval to seconds to make it more intuitive
 function Game:addTimer(interval, callback)
 	table.insert(self.timers, { interval = interval, callback = callback, lastTrigger = self.tickCount })
-end
-
--- INFO: Contains the logic of the game that happens every single frame of the game
-function Game:frameTimer()
-	self.board:clearLine()
-	self.board:tick()
-	self.board:drawPiece()
-
-	self.userInputHandler:handleInput(self.board)
 end
 
 function Game:renderBoard()
