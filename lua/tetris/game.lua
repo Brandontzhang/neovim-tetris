@@ -27,10 +27,7 @@ function Game:new()
 
 	-- Game logic update
 	game:addTimer(15, function()
-		game.board:tick()
-		game.board:drawPiece()
-
-		game.userInputHandler:handleInput(game.board)
+		game:frameTimer()
 	end)
 
 	return game
@@ -38,6 +35,15 @@ end
 
 function Game:addTimer(interval, callback)
 	table.insert(self.timers, { interval = interval, callback = callback, lastTrigger = self.tickCount })
+end
+
+-- INFO: Contains the logic of the game that happens every single frame of the game
+function Game:frameTimer()
+	self.board:clearLine()
+	self.board:tick()
+	self.board:drawPiece()
+
+	self.userInputHandler:handleInput(self.board)
 end
 
 function Game:renderBoard()
